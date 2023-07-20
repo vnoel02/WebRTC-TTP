@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect, useRef } from "react";
 import { Navigate, redirect, useNavigate, Link } from "react-router-dom";
 import { SocketContext } from "../Context.tsx";
 import { PeerContext } from "../PeerContext.tsx";
@@ -6,22 +6,26 @@ import {Peer} from 'peerjs'
 
 const Home = () => {
   const [id, setId] = useState();
-  const myPeer = new Peer(undefined, {
-    host: "/",
-    port: "4000"
-  });
+//   const myPeer = new Peer(undefined, {
+//     host: "/",
+//     port: "4000"
+//   });
   const socket = useContext(SocketContext);
   const peer = useContext(PeerContext);
  
   const [room, setRoom] = useState("");
   const [user, setUser] = useState("");
+
+  
   useEffect(() => {
-    myPeer.on('open', id => {
+    peer.on('open', id => {
+        console.log("HELLO")
         console.log("My Peer connection: ", id);
         setId(id);
     })
   }, [])
 
+  // Remember to replace id with user
   const navigate = useNavigate();
   const handleJoinRoom = () => {
     // myPeer.on('open', id => {
