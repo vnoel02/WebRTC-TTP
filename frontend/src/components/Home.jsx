@@ -47,6 +47,7 @@ const Home = () => {
   return (
     <div>
       <h1>Home</h1>
+      
       {/* <Link to={`/karaoke/${roomId}`}> */}
       {console.log("SOCKET ID: ", socket.id)}
 
