@@ -19,7 +19,7 @@ const Home = () => {
   
   useEffect(() => {
     peer.on('open', id => {
-        console.log("HELLO")
+        // console.log("HELLO")
         console.log("My Peer connection: ", id);
         setId(id);
     })
