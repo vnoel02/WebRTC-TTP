@@ -3,6 +3,7 @@ import { SocketContext } from "../../Context.tsx";
 import { PeerContext } from "../../PeerContext.tsx";
 import Peer from "peerjs";
 import { SingleVid } from "./SingleVid.jsx";
+// import { Stream } from "stream";
 
 /*
 For now just focus on having a second vid display, worry about the rest later
@@ -13,7 +14,7 @@ const Video = () => {
   const userVideo = useRef();
 //   const userVideo2 = useRef();
 //   const [videos, setVideos] = useState([]);
-  const [stream, setStream] = useState([]);
+  const [streams, setStreams] = useState([]);
   const socket = useContext(SocketContext);
   const peer = useContext(PeerContext);
 
@@ -26,7 +27,7 @@ const Video = () => {
           // Gets stream from user's camera
             // console.log(stream);
         //   video.current.srcObject = stream;
-          setStream((media) => [...media, stream]);
+          setStreams((media) => [...media, stream]);
 
           // Allows other users to see current video stream
         
@@ -35,11 +36,12 @@ const Video = () => {
                 console.log(call);
                 call.answer(stream);
                 console.log("stream", stream)
-                setStream((media) => [...media, stream]);
+                //Basically asking other peers to give me their stream
+                setStreams((media) => [...media, stream]);
     
                 call.on("stream", (userVideoStream) => {
                 //   userVideo.current.srcObject = userVideoStream;
-                  setStream((media) => [...media, userVideoStream]);
+                  setStreams((media) => [...media, userVideoStream]);
                 });
               });
          
@@ -47,14 +49,14 @@ const Video = () => {
           // When a user joins the room
           socket.on('user-connected', (userId) => {
            setTimeout(() => {
-            console.log("User-connected socket is listening")
+            console.log("User-connected socket is listening with id ", userId)
             // Send the user with our stream
             const call = peer.call(userId, stream);
             console.log("Stream being made", stream)
             // Recieves the user's stream 
             call.on("stream", (userVideoStream) => {
                 console.log("UserVideoStream: ", userVideoStream)
-                setStream((media) => [...media, userVideoStream]);
+                setStreams((media) => [...media, userVideoStream]);
                 console.log("Call listenter")
                 
             //   userVideo.current.srcObject = userVideoStream;
@@ -65,27 +67,43 @@ const Video = () => {
             });
           }, 1000);
            })
+
+           
             
         });
     };
     getDeviceMedia();
   }, []);
   
-  const set = new Set(stream);
+  const set = new Set(streams);
   const arrStream = Array.from(set)
   console.log("Array of streams: ", arrStream);
 
-  //   useEffect(() => {});
+    useEffect(() => {
+        socket.on('user-disconnected', ()=> {
+            console.log("A user disconnected ", peer.id);
+            console.log("Array of streams in useEffect ", streams);
+            streams.forEach((stream)=>{
+                console.log(stream.id)
+                if (!stream.active) {
+                    stream = null;
+                }
+
+            })
+
+           })
+        return ()=> socket.off('user-disconnected');
+    }, [streams]);
 
   return (
-    <div id="video-grid">
+    <div >
       <div>Video</div>
       
       {
       arrStream.map((stream, i) => {
         console.log("Stream in map: " , stream)
         return (
-           <SingleVid key={i} videoStream={stream}/>
+           <SingleVid key={i} videoStream={stream} userId={socket.id}/>
         )
       })}
 

@@ -8,8 +8,6 @@ import { Socket } from 'socket.io-client';
 
 
 const peer = new Peer(undefined, {
-    host: "/",
-    port: "4000"
   });
 
 const PeerContext = createContext<Peer>(peer);
