@@ -31,6 +31,7 @@ const Home = () => {
     // myPeer.on('open', id => {
         console.log("My Peer connection ", id);
         socket.emit('join_room', room , id );
+        // socket.emit('join_room', room);
     // })
     
     // navigate(`/karaoke/${room}`);

@@ -1,11 +1,12 @@
-import React, { createContext } from 'react';
+import React, { createContext, useContext } from 'react';
 import {Peer} from 'peerjs'
 import { Socket } from 'socket.io-client';
+import { SocketContext } from './Context';
 
 
 
-
-
+// const socket = useContext(SocketContext);
+// socket.on
 
 const peer = new Peer(undefined, {
   });
